@@ -4,25 +4,44 @@
 
 // Dependencies
 // =============================================================
+const express = require('express');
+const router = express.Router();
 var path = require('path');
+// db connection for api routes
+let mongoose = require('mongoose');
+let db = require('../models/model');
+require('dotenv').config();
+mongoose.connect(
+  'mongodb+srv://matthewpewewardy:matthewpewewardy@cluster0.faisl.mongodb.net/matthewpewewardy?retryWrites=true&w=majority',
+  {
+    useNewUrlParser: true,
+    useFindAndModify: false
+  }
+);
 
 // Routes
 // =============================================================
-module.exports = function (app) {
-  // Each of the below routes just handles the HTML page that the user gets sent to.
 
-  // index route handler
-  app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, '../public/index.html'));
-  });
+// Each of the below routes just handles the HTML page that the user gets sent to.
 
-  // excercise route handler
-  app.get('/excercise', function (req, res) {
-    res.sendFile(path.join(__dirname, '../public/excercise.html'));
-  });
+// index route handler
+router.get('/', function (req, res) {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
 
-  // stats route handler
-  app.get('/stats', function (req, res) {
-    res.sendFile(path.join(__dirname, '../public/stats.html'));
+// excercise route handler
+router.get('/exercise', function (req, res) {
+  res.sendFile(path.join(__dirname, '../public/exercise.html'));
+});
+
+// stats route handler
+router.get('/stats', function (req, res) {
+  res.sendFile(path.join(__dirname, '../public/stats.html'));
+});
+
+router.get('/api/workouts', (req, res) => {
+  db.find({}, function (error, result) {
+    res.send(result);
   });
-};
+});
+module.exports = router;
