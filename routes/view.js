@@ -46,31 +46,47 @@ router.get('/api/workouts', (req, res) => {
   });
 });
 
-router.put('/api/workouts/:id', (req, res) => {
-  //code here
+router.put('/api/workouts/:id', ({ body, params }, res) => {
+  console.log('this is the put');
+  console.log(body);
+  console.log(params);
+  db.findByIdAndUpdate(
+    params.id,
+    {
+      $push: {
+        exercises: [
+          {
+            type: body.type,
+            name: body.name,
+            weight: body.weight
+          }
+        ]
+      }
+    }
+    // { new: true, runValidators: true }
+  )
+    .then((data) => res.json(data))
+    .catch((err) => {
+      console.log('err', err);
+      res.json(err);
+    });
 });
-// const res = await fetch("/api/workouts/" + id, {
-//   method: "PUT",
-//   headers: { "Content-Type": "application/json" },
-//   body: JSON.stringify(data)
-// });
-router.post('/api/workouts', (req, res) => {
-  //code here
-});
-// async createWorkout(data = {}) {
-//   const res = await fetch("/api/workouts", {
-//     method: "POST",
-//     body: JSON.stringify(data),
-//     headers: { "Content-Type": "application/json" }
-//   });
-router.get('/api/workouts/range', (req, res) => {
-  //code here
-});
-// async getWorkoutsInRange() {
-//   const res = await fetch(`/api/workouts/range`);
-//   const json = await res.json();
 
-//   return json;
-// },
+router.post('/api/workouts', (req, res) => {
+  console.log('this is the post');
+  // console.log(req);
+  db.create({})
+    .then((data) => res.json(data))
+    .catch((err) => {
+      console.log('err', err);
+      res.json(err);
+    });
+});
+
+router.get('/api/workouts/range', (req, res) => {
+  db.find({}, function (error, result) {
+    res.send(result);
+  });
+});
 
 module.exports = router;
