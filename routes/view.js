@@ -13,7 +13,7 @@ let db = require('../models/model');
 // for env
 require('dotenv').config();
 mongoose.connect(
-  'mongodb+srv://matthewpewewardy:matthewpewewardy@cluster0.faisl.mongodb.net/matthewpewewardy?retryWrites=true&w=majority',
+  `mongodb+srv://matthewpewewardy:${process.env.MONGOUSER}@cluster0.faisl.mongodb.net/${process.env.PASSWORD}?retryWrites=true&w=majority`,
   {
     useNewUrlParser: true,
     useFindAndModify: false
@@ -40,12 +40,21 @@ router.get('/stats', function (req, res) {
   res.sendFile(path.join(__dirname, '../public/stats.html'));
 });
 // api routes
+
 router.get('/api/workouts', (req, res) => {
-  db.find({}, function (error, result) {
-    res.send(result);
-  });
+  db.aggregate([
+    { $addFields: { totalDuration: { $sum: '$exercises.duration' } } }
+  ])
+    .then((Workout) => {
+      res.json(Workout);
+      console.log(Workout);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
 });
 
+// put route
 router.put('/api/workouts/:id', ({ body, params }, res) => {
   console.log('this is the put');
   console.log(body);
@@ -58,7 +67,11 @@ router.put('/api/workouts/:id', ({ body, params }, res) => {
           {
             type: body.type,
             name: body.name,
-            weight: body.weight
+            weight: body.weight,
+            sets: body.sets,
+            reps: body.reps,
+            duration: body.duration,
+            distance: body.distance
           }
         ]
       }
