@@ -12,13 +12,10 @@ let mongoose = require('mongoose');
 let db = require('../models/model');
 // for env
 require('dotenv').config();
-mongoose.connect(
-  `mongodb+srv://matthewpewewardy:${process.env.MONGOUSER}@cluster0.faisl.mongodb.net/${process.env.PASSWORD}?retryWrites=true&w=majority`,
-  {
-    useNewUrlParser: true,
-    useFindAndModify: false
-  }
-);
+mongoose.connect(`${process.env.MONGOURL}`, {
+  useNewUrlParser: true,
+  useFindAndModify: false
+});
 
 // Routes
 // =============================================================
